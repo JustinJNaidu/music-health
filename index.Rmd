@@ -1,0 +1,333 @@
+---
+title: 'DATA 555: Music and Mental Health Visualizations'
+author: "Justin Naidu"
+date: "`r Sys.Date()`"
+output: 
+  flexdashboard::flex_dashboard:
+    theme: cerulean
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+```
+
+```{r packages, include=FALSE}
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(reshape2)
+library(plotly)
+library(DT)
+library(flexdashboard)
+library(viridis)  # For better color palettes
+
+```
+
+```{r load-data, include=FALSE}
+# Read in data
+data <- read.csv("mxmh_survey_results.csv")
+```
+
+```{r clean-data, include=FALSE}
+# Rename variables
+data_2 <- data %>% 
+  rename(age = Age,
+         primary_streaming_service = Primary.streaming.service,
+         hours_per_day = Hours.per.day,
+         while_working = While.working,
+         instrumentalist = Instrumentalist,
+         composer = Composer,
+         fav_genre = Fav.genre,
+         foreign_lang = Foreign.languages,
+         bpm = BPM,
+         classical = Frequency..Classical.,
+         country = Frequency..Country.,
+         edm = Frequency..EDM.,
+         folk = Frequency..Folk.,
+         gospel = Frequency..Gospel.,
+         hiphop = Frequency..Hip.hop.,
+         jazz = Frequency..Jazz.,
+         kpop = Frequency..K.pop.,
+         latin = Frequency..Latin.,
+         lofi = Frequency..Lofi.,
+         metal = Frequency..Metal.,
+         pop = Frequency..Pop.,
+         rb = Frequency..R.B.,
+         rap = Frequency..Rap.,
+         rock = Frequency..Rock.,
+         videogames = Frequency..Video.game.music.,
+         anxiety = Anxiety,
+         depression = Depression,
+         insomnia = Insomnia,
+         ocd = OCD,
+         music_effects = Music.effects
+         )
+
+# Remove null values
+data_3 <- data_2 %>%
+  filter(!is.na(primary_streaming_service) & primary_streaming_service != "") %>% 
+  filter(!is.na(composer) & composer != "") %>%
+  filter(!is.na(while_working) & while_working != "") %>%
+  filter(!is.na(instrumentalist) & instrumentalist != "") %>%
+  filter(!is.na(foreign_lang) & foreign_lang != "") %>% 
+  filter(!is.na(bpm) & bpm != "") %>% 
+  filter(!is.na(music_effects) & music_effects != "")
+
+# Remove outliers
+clean_data <- data_3 %>% 
+  filter(bpm != 0 & bpm != 4 & bpm != 8 & bpm != 20 & bpm != 624 & bpm != 999999999) %>% 
+  filter(anxiety != 75) %>% 
+  filter(insomnia != 35) %>% 
+  filter(ocd != 55 & ocd != 85) %>%
+  filter(hours_per_day < 24) %>% 
+  mutate(
+    anxiety = round(anxiety),
+    depression = round(depression),
+    insomnia = round(insomnia),
+    ocd = round(ocd)
+  )
+
+# Create age group variable
+clean_data <- clean_data %>%
+  mutate(age_group = case_when(
+    age < 18 ~ "Under 18",
+    age >= 18 & age <= 24 ~ "18-24",
+    age >= 25 & age <= 34 ~ "25-34",
+    age >= 35 & age <= 44 ~ "35-44",
+    age >= 45 ~ "45+"
+  ))
+
+clean_data$age_group <- factor(clean_data$age_group, levels = c("Under 18", "18-24", "25-34", "35-44", "45+"))
+
+# Create color palette for mental health disorders
+disorder_colors <- c("Anxiety" = "#FF9999", 
+                     "Depression" = "#66B2FF", 
+                     "Insomnia" = "#99CC99", 
+                     "OCD" = "#FFCC99")
+```
+
+
+# Overview {data-icon="fa-home"}
+
+### About the Dataset
+
+This project utilizes the publicly available "Music & Mental Health" dataset from Kaggle, created by Catherine Rasgaitis. The dataset explores the relationship between music therapy (MT) and mental health, examining how music influences stress, mood, and overall well-being. 
+
+[Dataset Link](https://www.kaggle.com/datasets/catherinerasgaitis/mxmh-survey-results) 
+
+### Data Collection
+
+The survey was conducted using Google Forms and distributed across multiple online and offline platforms. It was shared on Reddit forums, Discord servers, and various social media channels to reach a diverse audience. Additionally, posters and business cards were placed in libraries, parks, and other public spaces to increase participation. Data was collected from August 2022 to November 2022, resulting in 736 responses. After data cleaning, the final sample size was 605 respondents.
+
+### Research Questions
+
+The aim of this dashboard is to visualize music-related behaviors and identify potential correlations between music consumption and self-reported mental health conditions.
+
+**Key Questions:**
+
+1. Are mental health conditions improved by listening to music?
+2. How do rankings of mental health disorders vary across age groups?
+3. Does the number of daily music listening hours vary based on the severity of anxiety and depression?
+
+### Data Cleaning
+
+The following steps were taken to prepare the data:
+
+- Renamed variables for clarity
+- Removed null values
+- Removed outliers (e.g., unrealistic BPM values and extreme mental health scores)
+- Created age group categories for better analysis
+- Rounded mental health scores to whole numbers
+
+
+### Importance and Real-World Impact
+This project can provide valuable information on how music listening habits are associated with self-reported mental health conditions. Findings could inform public health initiatives by identifying specific music-related behaviors linked to better or worse mental health outcomes, potentially guiding music therapy applications and mental health interventions.
+
+# Listening to Music {data-icon="fa-play"}
+
+## {.no-title data-width=650}
+
+### Are mental health conditions improved by listening to music?  {.no-padding}
+
+```{r bar-graph-1}
+
+#Counting music effects per favourite music genre
+music_effects_bar <- ggplot(clean_data, aes(x = fav_genre, fill = music_effects)) +
+  geom_bar() +
+  labs(title = "Music Effects by Genre",
+       x = NULL,
+       y = "Counts",
+       fill = "Music Effects") +
+  scale_fill_manual(values = c("lightgreen","lightblue", "lightpink")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Make the plot interactive
+ggplotly(music_effects_bar)
+
+```
+## {.no-title data-width=350}
+
+### Key Findings {.no-padding}
+
+- A majority of study respondents reported that music positively impacted their mental well-being. Only a few respondents indicated that music had either no effect negative effect on their mental health.
+
+-  Music has a positive impact across all genres. While gospel and lo-fi music consistently show benefits, classical, pop, rap, rock, and video game music generally have positive effects, with only a few cases where they may worsen mental disorders.
+
+# Mental Health by Age Group {data-icon="fa-chart-bar"}
+
+## {.no-title data-width=650}
+
+### How do rankings of mental health disorders vary across age groups? {.no-padding}
+
+```{r bar-graph-2}
+
+long_data <- clean_data %>%
+  select(age_group, anxiety, depression, insomnia, ocd) %>%
+  pivot_longer(cols = c(anxiety, depression, insomnia, ocd), names_to = "Mental_issue", values_to = "Severity")
+
+# Capitalize disorder names
+long_data$Mental_issue <- recode(long_data$Mental_issue, 
+                                 "anxiety" = "Anxiety", 
+                                 "depression" = "Depression", 
+                                 "insomnia" = "Insomnia", 
+                                 "ocd" = "OCD")
+
+# Ensure "Under 18" appears first in order
+long_data$age_group <- factor(long_data$age_group, levels = c("Under 18", "18-24", "25-34", "35-44", "45+"))
+
+# Calculate the average severity of each disorder per age group
+age_summary <- long_data %>%
+  group_by(age_group, Mental_issue) %>%
+  summarise(Average_Severity = mean(Severity, na.rm = TRUE), .groups = 'drop')
+
+# Create a bar plot
+age_bar_graph <- ggplot(age_summary, aes(x = age_group, y = Average_Severity, fill = Mental_issue, text = paste(
+  "Age Group:", age_group,
+  "<br>Disorder:", Mental_issue,
+  "<br>Average Severity:", round(Average_Severity, 2)
+))) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  labs(title = "Average Mental Health Severity by Age Group",
+       x = "Age Group (years)",
+       y = "Average Severity (1 = Lowest, 10 = Highest)") +
+  theme_minimal() +
+  theme(
+    legend.position = "bottom",
+    plot.title = element_text(face = "bold", size = 14),
+    axis.title = element_text(face = "bold"),
+    axis.text = element_text(size = 10),
+    legend.title = element_text(face = "bold")
+  ) +
+  scale_fill_manual(values = disorder_colors) +
+  scale_y_continuous(limits = c(0, 10), breaks = seq(0, 10, 2))
+
+# Convert to interactive Plotly chart
+interactive_age_bar_graph <- ggplotly(age_bar_graph, tooltip = "text") %>%
+  layout(legend = list(title = list(text = "Mental Health Disorder"),
+                       orientation = "h",
+                       y = -0.2,
+                       x = 0.5))
+
+# Display the plot
+interactive_age_bar_graph
+
+```
+
+## {.no-title data-width=350}
+
+### Key Findings {.no-padding}
+
+**Anxiety and Depression:**
+
+- Anxiety and depression consistently show higher average severity levels (6 out of 10) across all age groups compared to insomnia and OCD (typically 3 out of 10)
+- The 18-24 age group reports the highest anxiety scores, suggesting this transitional life period of young adulthood may be particularly challenging
+- Depression severity appears to peak in the 25-34 age group, possibly reflecting career and relationship pressures common in this life stage
+
+**Age Variation:**
+
+- Young adults (18-24 and 25-34) report significantly higher severity levels for anxiety and depression than older adults
+- The 45+ age group shows notably lower severity scores across all disorders, which may reflect developed coping mechanisms or generational differences in mental health reporting
+- Insomnia severity appears more consistent across age groups, suggesting sleep issues may be less influenced by age-specific factors
+
+**Implications for Music Therapy:**
+
+- Different age groups may experience and report mental health symptoms differently
+- Music therapy interventions might need to be tailored to specific age groups and disorders
+
+# Music Listening Hours {data-icon="fa-headphones"}
+
+## {.no-title data-width=650}
+
+### Does the number of daily music listening hours vary based on the severity of anxiety and depression? {.no-padding}
+
+```{r box-plots}
+
+# Load necessary libraries
+library(ggplot2)
+library(plotly)  # For interactivity
+library(patchwork)  # For arranging plots
+
+# Anxiety
+boxplot_anxiety <- ggplot(clean_data, aes(x = factor(anxiety), y = hours_per_day)) +
+  geom_boxplot(fill = "#FF9999") +
+  labs(title = "Hours per Day vs Anxiety",
+       x = "Anxiety Ranking",
+       y = "Hours per Day") +
+  theme_minimal()
+
+# Depression
+boxplot_depression <- ggplot(clean_data, aes(x = factor(depression), y = hours_per_day)) +
+  geom_boxplot(fill = "#66B2FF") +
+  labs(title = "Hours per Day vs Depression",
+       x = "Depression Ranking",
+       y = "Hours per Day") +
+  theme_minimal()
+
+# Convert ggplot objects to interactive plotly objects
+boxplot_anxiety <- ggplotly(boxplot_anxiety)
+boxplot_depression <- ggplotly(boxplot_depression)
+
+# Arrange interactive plots side-by-side using subplot from plotly
+interactive_plot <- subplot(
+  boxplot_anxiety, boxplot_depression,
+  nrows = 1, # Change to 1 for side-by-side layout
+  shareY = TRUE, # Share Y axis for better comparison
+  titleX = TRUE, 
+  titleY = TRUE
+)
+
+# Add a common title
+interactive_plot <- interactive_plot %>% 
+  layout(title = "Relationship Between Hours per Day and Mental Health Metrics")
+
+# Show the interactive plot
+interactive_plot
+
+```
+
+## {.no-title data-width=350}
+
+### Key Findings {.no-padding}
+
+**Anxiety Rankings:**
+
+- The median listening hours appear relatively stable across different severity levels (around 2-4 hours per day)
+- There isn't a clear linear trend showing increased or decreased listening with higher anxiety rankings
+- Outliers show some individuals with very high listening hours (10-18 hours) across various anxiety levels
+
+**Depression Rankings:**
+
+- There appears to be a slight upward trend in the median listening hours as depression severity increases
+- The highest depression ranking (10) shows the highest median listening hours and greater variability
+- Depression level 10 shows the widest interquartile range, suggesting more variability in listening habits
+
+**Implications for Music Therapy:**
+
+- Music may serve as a self-medication or coping mechanism for those with anxeity or depression
+- Music therapy approaches may need to be personalized based on individual listening preferences and mental health conditions
