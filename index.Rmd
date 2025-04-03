@@ -119,6 +119,9 @@ disorder_colors <- c("Anxiety" = "#FF9999",
 This project utilizes the publicly available "Music & Mental Health" dataset from Kaggle, created by Catherine Rasgaitis. The dataset explores the relationship between music therapy (MT) and mental health, examining how music influences stress, mood, and overall well-being. 
 
 [Dataset Link](https://www.kaggle.com/datasets/catherinerasgaitis/mxmh-survey-results) 
+[GitHub Repository Link](https://github.com/JustinJNaidu/music-health/)
+[GitHub Pages Link](https://justinjnaidu.github.io/music-health/)
+
 
 ### Data Collection
 

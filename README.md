@@ -21,13 +21,12 @@ This project explores the relationship between music listening habits and mental
 4. **Age Grouping:** Created categorized age groups.
 5. **Data Transformation:** Rounded mental health scores for analysis.
 
+## Importance and Real-World Impact
+- This project can provide valuable information on how music listening habits are associated with self-reported mental health conditions. 
+- Findings could inform public health initiatives by identifying specific music-related behaviors linked to better or worse mental health outcomes, potentially guiding music therapy applications and mental health interventions.
+
 ## Required R Packages
 Ensure the following libraries are installed before running the analysis:
 ```r
 install.packages(c("dplyr", "tidyr", "ggplot2", "reshape2", "plotly", "DT", "flexdashboard", "viridis"))
 ```
-
-## Importance and Real-World Impact
-- This project can provide valuable information on how music listening habits are associated with self-reported mental health conditions. 
-- Findings could inform public health initiatives by identifying specific music-related behaviors linked to better or worse mental health outcomes, potentially guiding music therapy applications and mental health interventions.
-
