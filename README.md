@@ -25,6 +25,7 @@ This project explores the relationship between music listening habits and mental
 Ensure the following libraries are installed before running the analysis:
 ```r
 install.packages(c("dplyr", "tidyr", "ggplot2", "reshape2", "plotly", "DT", "flexdashboard", "viridis"))
+```
 
 ## Importance and Real-World Impact
 - This project can provide valuable information on how music listening habits are associated with self-reported mental health conditions. 
