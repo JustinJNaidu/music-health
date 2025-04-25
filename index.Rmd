@@ -7,6 +7,8 @@ output:
     theme: cerulean
     orientation: columns
     vertical_layout: fill
+    mobile: true
+    scrolling: true
 ---
 
 ```{r setup, include=FALSE, warning=FALSE, message=FALSE}
@@ -168,7 +170,12 @@ music_effects_bar <- ggplot(clean_data, aes(x = fav_genre, fill = music_effects)
        fill = "Music Effects") +
   scale_fill_manual(values = c("lightgreen","lightblue", "lightpink")) +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+  theme(
+    axis.text.x = element_text(angle = 60, hjust = 1, size = 8),
+    plot.title = element_text(size = 12),
+    legend.position = "bottom",
+    legend.text = element_text(size = 8)
+  )
 
 # Make the plot interactive
 ggplotly(music_effects_bar)
