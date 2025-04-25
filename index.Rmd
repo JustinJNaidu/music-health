@@ -314,7 +314,7 @@ interactive_plot <- subplot(
 
 # Add a common title
 interactive_plot <- interactive_plot %>% 
-  layout(title = "Relationship Between Hours per Day and Mental Health Metrics")
+  layout(title = "Impact of Daily Hours on Mental Health")
 
 # Show the interactive plot
 interactive_plot
