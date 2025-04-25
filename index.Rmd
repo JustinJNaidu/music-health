@@ -187,7 +187,7 @@ ggplotly(music_effects_bar)
 
 - A majority of study respondents reported that music positively impacted their mental well-being. Only a few respondents indicated that music had either no effect negative effect on their mental health.
 
--  Music has a positive impact across all genres. While gospel and lo-fi music consistently show benefits, classical, pop, rap, rock, and video game music generally have positive effects, with only a few cases where they may worsen mental disorders.
+-  Music of all genres tends to have a positive influence on mental health. Gospel and lo-fi stand out for their consistently uplifting effects, while classical, pop, rap, rock, and even video game soundtracks generally promote well-being—with only rare instances where they might negatively impact certain mental health conditions.
 
 # Mental Health by Age Group {data-icon="fa-chart-bar"}
 
